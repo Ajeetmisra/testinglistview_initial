@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
             JSONArray jsonArray = jsonObjectdata.getJSONArray("regional");
             final int max = jsonArray.length();
 
-            for (int i = 1; i < max; i++) {
+            for (int i = 0; i < max; i++) {
                 JSONObject currentStatesResponse = jsonArray.getJSONObject(i);
                 String loca = currentStatesResponse.getString("loc");
                 int totalCase = currentStatesResponse.getInt("totalConfirmed");

@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             }
 
-
+//
         } catch (JSONException e) {
             Log.e("testing", "extractFeatureFromJson: ", e);
         }

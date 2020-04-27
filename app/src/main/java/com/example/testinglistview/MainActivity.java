@@ -1,8 +1,14 @@
 package com.example.testinglistview;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.Loader;
 
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,7 +33,8 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<States>> {
+    private static final String LOG_TAG = MainActivity.class.getName();
     ListView lv;
     protected static final String API_URL = "https://api.rootnet.in/covid19-in/stats/latest";
    private DataAdapter dataAdapter;
@@ -91,36 +98,84 @@ public class MainActivity extends AppCompatActivity {
 //        arrayList.add(new States("ajeet",6 ));
 ////          }
 ////     arrayList.add(new States("ajeet",6 ));
-        ArrayList<States> arrayList = new ArrayList<States>();
-         dataAdapter = new DataAdapter(this, arrayList);
-        lv.setAdapter(dataAdapter);
-        StatesAsyncTask Task = new StatesAsyncTask();
-        Task.execute(API_URL);
-    }
+//        LoaderManager.getInstance(this).initLoader(1,null,this);
 
-    private class StatesAsyncTask extends AsyncTask<String, Void, ArrayList<States>>
-    {
+        ArrayList<States> arrayList = new ArrayList<States>();
+        dataAdapter = new DataAdapter(this, arrayList);
+        lv.setAdapter(dataAdapter);
+//        StatesAsyncTask Task = new StatesAsyncTask();
+//        Task.execute(API_URL);\
+
+        LoaderManager.getInstance(this).initLoader(1,null,this);
+//          LoaderManager loaderManager = getLoaderManager();
+
+    }
+    /**
+     * Loads a list of States by using an AsyncTask to perform the
+     * network request to the given URL.
+     */
+    public static class StatesLoader extends AsyncTaskLoader<ArrayList<States>> {
+
+        /** Tag for log messages */
+//        private static final String LOG_TAG = EarthquakeLoader.class.getName();
+
+        /** Query URL */
+        private String mUrl;
+
+        /**
+         * Constructs a new {@link StatesLoader}.
+         *
+         * @param context of the activity
+         * @param url to load data from
+         */
+        public StatesLoader(Context context, String url) {
+            super(context);
+            mUrl = url;
+        }
 
         @Override
-        protected ArrayList<States> doInBackground(String... urls) {
-            if (urls.length < 1 || urls[0] == null) {
+        protected void onStartLoading() {
+            forceLoad();
+        }
+
+        /**
+         * This is on a background thread.
+         */
+        @Override
+        public ArrayList<States> loadInBackground() {
+            if (mUrl == null) {
                 return null;
             }
 
-            ArrayList<States> result = fetchStateData(urls[0]);
-            return result;
-
+            // Perform the network request, parse the response, and extract a list of earthquakes.
+            ArrayList<States> states = fetchStateData(mUrl);
+            return states;
         }
-        protected void onPostExecute(ArrayList<States> data) {
-            // Clear the adapter of previous earthquake data
-            dataAdapter.clear();
+    }
+    @NonNull
+    @Override
+    public Loader<ArrayList<States>> onCreateLoader(int id, @Nullable Bundle args) {
+        Log.i("testing", "onCreateLoader: is called");
+        return new StatesLoader(this,API_URL);
+    }
 
-            // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
-            // data set. This will trigger the ListView to update.
-            if (data != null && !data.isEmpty()) {
-                dataAdapter.addAll(data);
-            }
+    @Override
+    public void onLoadFinished(@NonNull Loader<ArrayList<States>> loader, ArrayList<States> data) {
+        // Clear the adapter of previous earthquake data
+        dataAdapter.clear();
+
+        // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
+        // data set. This will trigger the ListView to update.
+        if (dataAdapter != null && !dataAdapter.isEmpty()) {
+            dataAdapter.notifyDataSetChanged();
+
+            dataAdapter.addAll(data);
         }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<ArrayList<States>> loader) {
+        dataAdapter.clear();
     }
 
 

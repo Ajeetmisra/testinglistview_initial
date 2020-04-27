@@ -8,11 +8,13 @@
         android:id="@+id/location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp" />
+        android:layout_marginLeft="50dp"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/cases"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"/>
+        android:layout_marginLeft="50dp"
+        android:textSize="18sp" />
 </LinearLayout>

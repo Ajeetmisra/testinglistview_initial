@@ -105,15 +105,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         lv.setAdapter(dataAdapter);
 //        StatesAsyncTask Task = new StatesAsyncTask();
 //        Task.execute(API_URL);\
+//        LoaderManager.getInstance(this).initLoader(1,null,this);
 
-        LoaderManager.getInstance(this).initLoader(1,null,this);
 //          LoaderManager loaderManager = getLoaderManager();
-
+//           getSupportLoaderManager().initLoader(1,null,this);
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Log.e("testing", "onCreate:  init called");
+        loaderManager.initLoader(0,null,this);
     }
     /**
      * Loads a list of States by using an AsyncTask to perform the
      * network request to the given URL.
      */
+    // now loaders have been deprecreted sine the release of android jetpack so we can use view models class instead of loaders
+
     public static class StatesLoader extends AsyncTaskLoader<ArrayList<States>> {
 
         /** Tag for log messages */
@@ -147,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 return null;
             }
 
-            // Perform the network request, parse the response, and extract a list of earthquakes.
+            // Perform the network request, parse the response, and extract a list of states .
             ArrayList<States> states = fetchStateData(mUrl);
             return states;
         }
